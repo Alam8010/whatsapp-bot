@@ -10,12 +10,8 @@ const MODEL = "meta-llama/Llama-3.1-8B-Instruct:cerebras";
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu'
-        ]
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu']
     }
 });
 
