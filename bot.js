@@ -1,11 +1,35 @@
+require('dotenv').config();
+
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
+const qrcode = require('qrcode');
+const http = require('http');
 const axios = require('axios');
 
 const HF_API_KEY = process.env.HF_API_KEY;
-
-// ✅ Model + provider in one string (cerebras is fast and free-tier friendly)
 const MODEL = "meta-llama/Llama-3.1-8B-Instruct:cerebras";
+
+let lastQR = null;
+
+// Simple web server to display QR code
+http.createServer((req, res) => {
+    if (lastQR) {
+        qrcode.toDataURL(lastQR, (err, url) => {
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(`
+                <html>
+                <body style="display:flex;justify-content:center;align-items:center;height:100vh;background:#111;flex-direction:column">
+                    <h2 style="color:white">Scan with WhatsApp</h2>
+                    <img src="${url}" style="width:300px;height:300px"/>
+                    <p style="color:gray">Refresh if expired</p>
+                </body>
+                </html>
+            `);
+        });
+    } else {
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(`<html><body style="background:#111;color:white;display:flex;justify-content:center;align-items:center;height:100vh"><h2>Bot is already connected! ✅</h2></body></html>`);
+    }
+}).listen(process.env.PORT || 3000);
 
 const client = new Client({
     authStrategy: new LocalAuth(),
@@ -15,13 +39,13 @@ const client = new Client({
     }
 });
 
-
 client.on('qr', (qr) => {
-    qrcode.generate(qr, { small: true });
-    console.log('📱 Scan the QR code above to log in');
+    lastQR = qr;
+    console.log('✅ QR ready — open your Railway public URL to scan it');
 });
 
 client.on('ready', () => {
+    lastQR = null;
     console.log('✅ Bot is ready!');
 });
 
