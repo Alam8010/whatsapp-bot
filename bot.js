@@ -8,8 +8,13 @@ const HF_API_KEY = process.env.HF_API_KEY;
 const MODEL = "meta-llama/Llama-3.1-8B-Instruct:cerebras";
 
 const client = new Client({
-    authStrategy: new LocalAuth()
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        executablePath: '/run/current-system/sw/bin/chromium',
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    }
 });
+
 
 client.on('qr', (qr) => {
     qrcode.generate(qr, { small: true });
