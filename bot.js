@@ -29,7 +29,7 @@ http.createServer((req, res) => {
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(`<html><body style="background:#111;color:white;display:flex;justify-content:center;align-items:center;height:100vh"><h2>Bot is already connected! ✅</h2></body></html>`);
     }
-}).listen(process.env.PORT || 3000);
+}).listen(process.env.PORT || 3000, '0.0.0.0');
 
 const client = new Client({
     authStrategy: new LocalAuth(),
