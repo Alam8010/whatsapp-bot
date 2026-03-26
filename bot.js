@@ -10,7 +10,8 @@ const MODEL = "meta-llama/Llama-3.1-8B-Instruct:cerebras";
 
 let lastQR = null;
 
-// Simple web server to display QR code
+const PORT = process.env.PORT || 3000;
+
 http.createServer((req, res) => {
     if (lastQR) {
         qrcode.toDataURL(lastQR, (err, url) => {
@@ -29,7 +30,9 @@ http.createServer((req, res) => {
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(`<html><body style="background:#111;color:white;display:flex;justify-content:center;align-items:center;height:100vh"><h2>Bot is already connected! ✅</h2></body></html>`);
     }
-}).listen(process.env.PORT || 3000, '0.0.0.0');
+}).listen(PORT, '0.0.0.0', () => {
+    console.log(`🌐 Web server running on port ${PORT}`);
+});
 
 const client = new Client({
     authStrategy: new LocalAuth(),
